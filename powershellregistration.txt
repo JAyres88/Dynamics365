@@ -1,0 +1,15 @@
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$sourceNugetExe = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+$targetNugetExe = ".\nuget.exe"
+Remove-Item .\Tools -Force -Recurse -ErrorAction Ignore
+Invoke-WebRequest $sourceNugetExe -OutFile $targetNugetExe
+Set-Alias nuget $targetNugetExe -Scope Global -Verbose
+ 
+##
+##Download Plugin Registration Tool
+##
+./nuget install Microsoft.CrmSdk.XrmTooling.PluginRegistrationTool -O .\Tools
+md .\Tools\PluginRegistration
+$prtFolder = Get-ChildItem ./Tools | Where-Object {$_.Name -match 'Microsoft.CrmSdk.XrmTooling.PluginRegistrationTool.'}
+move .\Tools\$prtFolder\tools\*.* .\Tools\PluginRegistration
+Remove-Item .\Tools\$prtFolder -Force -Recurse
